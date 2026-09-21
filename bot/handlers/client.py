@@ -17,11 +17,28 @@ async def menu(m: Message, session):
 @router.callback_query(F.data == "menu")
 async def menu_cb(c, session):
     ps = await pizzas(session)
-    text = "🍕 <b>Меню</b>\n\n" + "\n".join(f"<b>{p.name}</b> — {money(p.price_30, '₽')}\n{p.description}" for p in ps)
+
+    text = (
+        "🍕 <b>Меню</b>\n\n"
+        + "\n".join(
+            f"<b>{p.name}</b> — {money(p.price_30, '₽')}\n"
+            f"{p.description}"
+            for p in ps
+        )
+    )
+
     if c.message.photo:
-        await c.message.delete(); await c.message.answer(text, reply_markup=pizzas_menu(ps))
+        await c.message.delete()
+        await c.message.answer(
+            text,
+            reply_markup=pizzas_menu(ps)
+        )
     else:
-        await c.message.edit_text(text, reply_markup=pizzas_menu(ps))
+        await c.message.edit_text(
+            text,
+            reply_markup=pizzas_menu(ps)
+        )
+
     await c.answer()
 @router.callback_query(F.data.startswith("pizza:"))
 async def details(c, session, bot):
@@ -96,3 +113,9 @@ async def my_orders(m: Message, session, config):
     u = await user(session, m.from_user.id, m.from_user.username, m.from_user.first_name); os = await orders(session, u.id)
     if not os: await m.answer("📦 Заказов пока нет."); return
     for o in os[:10]: await m.answer(order_text(o, config.currency))
+
+
+@router.message(F.photo)
+async def get_photo_id(message: Message):
+    photo = message.photo[-1]
+    await message.answer(f"file_id:\n{photo.file_id}")

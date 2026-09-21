@@ -25,8 +25,14 @@ def qty(pid):
             callback_data=f"qty:{pid}:{q}"
         )
 
-    b.adjust(5)
+    b.button(
+        text="⬅️ Назад в меню",
+        callback_data="menu"
+    )
+
+    b.adjust(5, 1)
     return b.as_markup()
+
 
 
 def cart(items):
