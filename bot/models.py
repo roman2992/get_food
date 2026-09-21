@@ -17,15 +17,23 @@ class User(Base):
     orders: Mapped[list["Order"]]=relationship(back_populates="user")
 
 class Pizza(Base):
-    __tablename__="pizzas"
-    id: Mapped[int]=mapped_column(primary_key=True)
-    name: Mapped[str]=mapped_column(String(255))
-    description: Mapped[str]=mapped_column(Text)
-    price_25: Mapped[int]=mapped_column(Integer)
-    price_30: Mapped[int]=mapped_column(Integer)
-    price_35: Mapped[int]=mapped_column(Integer)
-    active: Mapped[bool]=mapped_column(Boolean,default=True)
-    items: Mapped[list["OrderItem"]]=relationship(back_populates="pizza")
+    __tablename__ = "pizzas"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(Text)
+    price_25: Mapped[int] = mapped_column(Integer)
+    price_30: Mapped[int] = mapped_column(Integer)
+    price_35: Mapped[int] = mapped_column(Integer)
+    image_file_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
+    )
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    items: Mapped[list["OrderItem"]] = relationship(
+        back_populates="pizza"
+    )
 
 class Order(Base):
     __tablename__="orders"

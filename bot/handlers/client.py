@@ -18,15 +18,49 @@ async def menu(m,session):
     text="🍕 <b>Меню</b>\n\n"+"\n".join(f"<b>{p.name}</b> — от {money(p.price_25,'₽')}\n{p.description}" for p in ps)
     await m.answer(text,reply_markup=pizzas_menu(ps))
 
-@router.callback_query(F.data=="menu")
-async def menu_cb(c,session):
-    ps=await pizzas(session)
-    await c.message.edit_text("🍕 <b>Меню</b>",reply_markup=pizzas_menu(ps)); await c.answer()
+@router.callback_query(F.data == "menu")
+async def menu_cb(c, session):
+    ps = await pizzas(session)
+
+    if c.message.photo:
+        await c.message.delete()
+        await c.message.answer(
+            "🍕 <b>Меню</b>",
+            reply_markup=pizzas_menu(ps)
+        )
+    else:
+        await c.message.edit_text(
+            "🍕 <b>Меню</b>",
+            reply_markup=pizzas_menu(ps)
+        )
+
+    await c.answer()
 
 @router.callback_query(F.data.startswith("pizza:"))
-async def details(c,session):
-    p=await pizza(session,int(c.data.split(":")[1]))
-    await c.message.edit_text(f"🍕 <b>{p.name}</b>\n\n{p.description}\n\nВыберите размер:",reply_markup=sizes(p.id)); await c.answer()
+async def details(c, session, bot):
+    p = await pizza(session, int(c.data.split(":")[1]))
+
+    text = (
+        f"🍕 <b>{p.name}</b>\n\n"
+        f"{p.description}\n\n"
+        f"Выберите размер:"
+    )
+
+    if p.image_file_id:
+        await c.message.delete()
+        await bot.send_photo(
+            chat_id=c.from_user.id,
+            photo=p.image_file_id,
+            caption=text,
+            reply_markup=sizes(p.id),
+        )
+    else:
+        await c.message.edit_text(
+            text,
+            reply_markup=sizes(p.id),
+        )
+
+    await c.answer()
 
 @router.callback_query(F.data.startswith("size:"))
 async def size_cb(c,session):
@@ -104,3 +138,11 @@ async def my_orders(m,session,config):
     u=await user(session,m.from_user.id,m.from_user.username,m.from_user.first_name); os=await orders(session,u.id)
     if not os: await m.answer("📦 Заказов пока нет."); return
     for o in os[:10]: await m.answer(order_text(o,config.currency))
+
+@router.message(F.photo)
+async def get_photo_id(m: Message):
+    photo = m.photo[-1]
+    await m.answer(
+        f"🖼 <b>Telegram file_id:</b>\n\n"
+        f"<code>{photo.file_id}</code>"
+    )
