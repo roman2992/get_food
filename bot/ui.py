@@ -10,15 +10,24 @@ def pizzas_menu(items):
     for p in items: b.button(text=p.name,callback_data=f"pizza:{p.id}")
     b.adjust(1); return b.as_markup()
 
-def sizes(pid):
-    b=InlineKeyboardBuilder()
-    for s in (25,30,35): b.button(text=f"{s} см",callback_data=f"size:{pid}:{s}")
-    b.button(text="⬅️ Меню",callback_data="menu"); b.adjust(3,1); return b.as_markup()
+#def sizes(pid):
+#    b=InlineKeyboardBuilder()
+#    for s in (25,30,35): b.button(text=f"{s} см",callback_data=f"size:{pid}:{s}")
+#    b.button(text="⬅️ Меню",callback_data="menu"); b.adjust(3,1); return b.as_markup()
 
-def qty(pid,size):
-    b=InlineKeyboardBuilder()
-    for q in (1,2,3,4,5): b.button(text=str(q),callback_data=f"qty:{pid}:{size}:{q}")
-    b.adjust(5); return b.as_markup()
+
+def qty(pid):
+    b = InlineKeyboardBuilder()
+
+    for q in (1, 2, 3, 4, 5):
+        b.button(
+            text=str(q),
+            callback_data=f"qty:{pid}:{q}"
+        )
+
+    b.adjust(5)
+    return b.as_markup()
+
 
 def cart(items):
     b=InlineKeyboardBuilder()

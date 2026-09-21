@@ -33,4 +33,7 @@ async def status(c,session,config,bot):
     labels={"accepted":"✅ Заказ принят","cooking":"👨‍🍳 Заказ готовится","delivery":"🚚 Заказ у курьера","completed":"🏁 Заказ доставлен","cancelled":"❌ Заказ отменён"}
     try: await bot.send_message(o.user.telegram_id,f"📦 Заказ #{o.id}\n\n{labels.get(status,status)}")
     except Exception: pass
-    await c.answer("Статус изменён")
+    try:
+        await c.answer("Статус изменён")
+    except Exception:
+        pass
